@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "414673222507",
+    "firebase_url": "https://flavourmeter.firebaseio.com",
+    "project_id": "flavourmeter",
+    "storage_bucket": "flavourmeter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:414673222507:android:3f8c89f12e0bcec1",
+        "android_client_info": {
+          "package_name": "com.example.smell_o_scope"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "414673222507-o7r9tqvha9aa4nat5o513mb3nqu5q089.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smell_o_scope",
+            "certificate_hash": "bfeb3f688a82ec5070ae5bc48b28e481b53e1b0b"
+          }
+        },
+        {
+          "client_id": "414673222507-7hiodi3ef9e9f7rols2cl5e1asccl6sq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPuB4Cgb7KgUBC-_6KVrIQ0W2JV8lAnj4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "414673222507-7hiodi3ef9e9f7rols2cl5e1asccl6sq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
