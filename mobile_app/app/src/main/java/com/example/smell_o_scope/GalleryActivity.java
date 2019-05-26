@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -60,6 +61,12 @@ public class GalleryActivity extends AppCompatActivity {
 
         Uid = FirebaseAuth.getInstance().getUid();
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarGallery);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 //        //mDatabaseRef = FirebaseDatabase.getInstance().getReference("capturedImages");
 //        mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(Uid).child("capturedImages");
 //
@@ -94,21 +101,30 @@ public class GalleryActivity extends AppCompatActivity {
 //            }
 //        });
 
-        ImageView imview = (ImageView) findViewById(R.id.dish1);
-        imview.setImageResource(0);
-        Drawable draw = getResources().getDrawable(R.mipmap.food_image);
-        imview.setImageDrawable(draw);
+//        ImageView imview = (ImageView) findViewById(R.id.dish1);
+////        imview.setImageResource(0);
+////        Drawable draw = getResources().getDrawable(R.mipmap.food_image);
+////        imview.setImageDrawable(draw);
+//
+//        String url="https://firebasestorage.googleapis.com/v0/b/flavourmeter.appspot.com/o/captures%2F-LfJoqmMFnSHdi45tZNv?alt=media&token=783005ce-4b3b-497e-8acf-d7d7540758b1";//Retrieved url as mentioned above
+//        Glide.with(getApplicationContext()).load(url).into(imview);
 
 
-        analytics = findViewById(R.id.analytics1);
-        analytics.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAnalytics();
-            }
-        });
+//        analytics = findViewById(R.id.analytics1);
+//        analytics.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                showAnalytics();
+//            }
+//        });
 
 
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private int imageIterator = 0;

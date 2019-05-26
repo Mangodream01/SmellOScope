@@ -13,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -21,11 +22,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import static android.widget.Toast.LENGTH_LONG;
 
 public class MainActivity extends AppCompatActivity {
 
     FragmentPagerAdapter adapterViewPager;
+
+    public static int currentItem = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +39,15 @@ public class MainActivity extends AppCompatActivity {
 
         ViewPager viewPager = findViewById(R.id.viewPager);
 
-
         adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapterViewPager);
-        viewPager.setCurrentItem(1);
+        viewPager.setCurrentItem(currentItem);
 
         showAddItemDialog(this);
+
+//        if(CameraFragment.showMenu == true){
+//            viewPager.setCurrentItem(0,true);
+//        }
 
 
     }
@@ -47,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private void showAddItemDialog(Context c) {
         AlertDialog dialog = new AlertDialog.Builder(c)
                 .setTitle("How to use")
-                .setMessage("Swipe right to view the menu!")
+                .setMessage("Swipe right to view the menu or take a picture straight away!")
                 .setNegativeButton("Understood", null)
                 .create();
         dialog.show();
@@ -62,6 +70,16 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent (this, GalleryActivity.class);
         startActivity(intent);
     }
+
+    public void onLogOut (View view){
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(this, SplashScreenActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        return;
+    }
+
+
 
     public static class MyPagerAdapter extends FragmentPagerAdapter{
         public MyPagerAdapter(FragmentManager fm) {

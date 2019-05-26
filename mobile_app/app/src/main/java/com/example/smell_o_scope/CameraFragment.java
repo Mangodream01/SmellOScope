@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +16,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -22,6 +27,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,6 +50,10 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
 
     SurfaceView nSurfaceView;
     SurfaceHolder nSurfaceHolder;
+
+    FragmentManager fragmentManager;
+
+    public static boolean showMenu;
 
     final int CAMERA_REQUEST_CODE = 1;
 
@@ -68,7 +78,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
         }
 
 
-        Button mCapture = view.findViewById(R.id.capture);
+        ImageButton mCapture = view.findViewById(R.id.capture);
         mCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,13 +86,32 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
             }
         });
 
-        Button mLogout = view.findViewById(R.id.logout);
-        mLogout.setOnClickListener(new View.OnClickListener(){
+        ImageButton mMenu = view.findViewById(R.id.toMenu);
+        mMenu.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                LogOut();
+            public void onClick(View view) {
+
+//                Fragment fragment = MenuFragment.newInstance();
+//
+//                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+//
+//                transaction.replace(R.id.cameraid, fragment).commit();
             }
         });
+
+//        Toolbar toolbar = (Toolbar) getView().findViewById(R.id.general_appbar);
+//        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+//        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+
+//        Button mLogout = view.findViewById(R.id.logout);
+//        mLogout.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view){
+//                LogOut();
+//            }
+//        });
 
 
         jpegCallback = new Camera.PictureCallback(){
@@ -105,17 +134,19 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
             }
         };
 
+
+
         return view;
 
     }
 
-    private void LogOut() {
-        FirebaseAuth.getInstance().signOut();
-        Intent intent = new Intent(getContext(), SplashScreenActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        return;
-    }
+//    private void LogOut() {
+//        FirebaseAuth.getInstance().signOut();
+//        Intent intent = new Intent(getContext(), SplashScreenActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        startActivity(intent);
+//        return;
+//    }
 
     public String saveImageToStorage(Bitmap bitmap){
         String fileName = "imageToSend";

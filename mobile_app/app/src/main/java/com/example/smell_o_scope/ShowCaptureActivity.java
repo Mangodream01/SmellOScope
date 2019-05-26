@@ -1,5 +1,6 @@
 package com.example.smell_o_scope;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -35,16 +36,21 @@ import java.util.Map;
 
 public class ShowCaptureActivity extends AppCompatActivity {
 
-    Bitmap bitmap;
+    public static Bitmap bitmap;
 
     String Uid;
 
-    public static Upload upload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_capture);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarCapture);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         try {
             bitmap = BitmapFactory.decodeStream(getApplication().openFileInput("imageToSend"));
@@ -67,6 +73,26 @@ public class ShowCaptureActivity extends AppCompatActivity {
             }
         });
 
+        Button analyzeImage = findViewById(R.id.analyze_picture);
+        analyzeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(ShowCaptureActivity.this, "Image is being analyzed", Toast.LENGTH_LONG).show();
+                goToAnalysis(view);
+            }
+        });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+
+    public void goToAnalysis(View view){
+        Intent intent = new Intent (this, AnalyticsActivity.class);
+        startActivity(intent);
     }
 
     private void saveToDatabase() {
@@ -92,7 +118,7 @@ public class ShowCaptureActivity extends AppCompatActivity {
                         userImageDb.updateChildren(newImage);
                         Toast.makeText(ShowCaptureActivity.this, "Image saved to database", Toast.LENGTH_LONG).show();
 
-                        upload.setmImageUrl(uri.toString());
+                        //upload.setmImageUrl(uri.toString());
                         finish();
                         return;
                     }
