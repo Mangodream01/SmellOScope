@@ -1,0 +1,7 @@
+name: ActivePython-3.6
+owner: ActiveState
+languages:
+- name: python
+variables:
+- name: LD_LIBRARY_PATH
+  value: /root/.cache/activestate/cli-master/1f6c1d80/lib/
