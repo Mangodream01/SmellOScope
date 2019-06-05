@@ -1,6 +1,6 @@
-Sweet
-Sour
-Bitter
-Salty
 Meaty
+Sweet
 Piquant
+Sour
+Salty
+Bitter

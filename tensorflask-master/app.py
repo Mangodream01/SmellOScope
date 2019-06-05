@@ -40,12 +40,12 @@ def load_graph(model_file):
     graph = tf.Graph()
     graph_def = tf.GraphDef()
 
-    with tf.gfile.GFile(model_file, "rb") as f:
-         #graph = tf.Graph()
-        #graph_def = tf.GraphDef()
+    with tf.gfile.GFile(model_file, "rb") as f:     
          graph_def.ParseFromString(f.read())
-    with graph.as_default():
+        # print(f)
+    with graph.as_default():  
          tf.import_graph_def(graph_def)
+        # print(graph_def)
 
     return graph
 
@@ -111,15 +111,15 @@ if __name__ == '__main__':
     input_width = 224
     input_mean = 128
     input_std = 128
-    input_layer = "input"
-    output_layer = "final_result"
+    input_layer = "import/input_1"
+    output_layer = "import/dense_1/Softmax"
 
     # Load TensorFlow Graph from disk
     graph = load_graph(model_file)
 
     # Grab the Input/Output operations
-    input_name = "import/" + input_layer
-    output_name = "import/" + output_layer
+    input_name =  input_layer
+    output_name =  output_layer
     input_operation = graph.get_operation_by_name(input_name)
     output_operation = graph.get_operation_by_name(output_name)
 
