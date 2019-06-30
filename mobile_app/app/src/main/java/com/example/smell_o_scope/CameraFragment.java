@@ -6,11 +6,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.PorterDuff;
 import android.hardware.Camera;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -20,6 +23,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -33,6 +37,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -91,11 +96,14 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
             @Override
             public void onClick(View view) {
 
-//                Fragment fragment = MenuFragment.newInstance();
-//
-//                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-//
-//                transaction.replace(R.id.cameraid, fragment).commit();
+//                Toast.makeText(getActivity(), "Swipe right to see the menu", Toast.LENGTH_LONG).show();
+                Toast toast = Toast.makeText(getActivity(), "Swipe right to see the menu", Toast.LENGTH_LONG);
+                View viewtoast = toast.getView();
+
+//Gets the actual oval background of the Toast then sets the colour filter
+                viewtoast.getBackground().setColorFilter(Color.parseColor("#f7a94a"), PorterDuff.Mode.SRC_IN);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
             }
         });
 
@@ -160,8 +168,12 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
             e.printStackTrace();
             fileName = null;
         }
+
+
         return fileName;
     }
+
+
 
 
 

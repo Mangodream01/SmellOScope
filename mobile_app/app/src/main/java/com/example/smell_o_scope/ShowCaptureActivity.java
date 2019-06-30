@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,8 +33,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class ShowCaptureActivity extends AppCompatActivity {
 
@@ -69,7 +73,9 @@ public class ShowCaptureActivity extends AppCompatActivity {
         saveImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveToDatabase();
+//                saveToDatabase();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                saveImageToPhone(bitmap, sdf.toString());
             }
         });
 
@@ -77,7 +83,7 @@ public class ShowCaptureActivity extends AppCompatActivity {
         analyzeImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ShowCaptureActivity.this, "Image is being analyzed", Toast.LENGTH_LONG).show();
+//                Toast.makeText(ShowCaptureActivity.this, "Image is being analyzed", Toast.LENGTH_LONG).show();
                 goToAnalysis(view);
             }
         });
@@ -93,6 +99,41 @@ public class ShowCaptureActivity extends AppCompatActivity {
     public void goToAnalysis(View view){
         Intent intent = new Intent (this, AnalyticsActivity.class);
         startActivity(intent);
+    }
+
+    public void saveImageToPhone(Bitmap finalBitmap, String image_name) {
+
+        String root = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES).toString();
+        File myDir = new File(root + "/Flavourmeter");
+        myDir.mkdirs();
+        Random generator = new Random();
+
+        int n = 10000;
+        n = generator.nextInt(n);
+        String fname = "Image-"+ n +".jpg";
+        File file = new File (myDir, fname);
+        if (file.exists ()) file.delete ();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            // sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+            //     Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+            out.flush();
+            out.close();
+            Toast.makeText(ShowCaptureActivity.this, "Image saved to gallery.", Toast.LENGTH_LONG).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        MediaScannerConnection.scanFile(this, new String[]{file.toString()}, null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                    public void onScanCompleted(String path, Uri uri) {
+                        Log.i("ExternalStorage", "Scanned " + path + ":");
+                        Log.i("ExternalStorage", "-> uri=" + uri);
+                    }
+                });
     }
 
     private void saveToDatabase() {

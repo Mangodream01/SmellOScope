@@ -3,7 +3,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.icu.text.IDNA;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -15,11 +18,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setCurrentItem(currentItem);
 
         showAddItemDialog(this);
+//        showSwipeScreen(findViewById(R.id.swipe));
 
 //        if(CameraFragment.showMenu == true){
 //            viewPager.setCurrentItem(0,true);
@@ -68,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void goToGallery (View view){
         Intent intent = new Intent (this, GalleryActivity.class);
+        startActivity(intent);
+    }
+
+    public void goToAppDescription(View view){
+        Intent intent = new Intent (this, AppDescription.class);
         startActivity(intent);
     }
 
@@ -105,6 +119,34 @@ public class MainActivity extends AppCompatActivity {
         public int getCount(){
             return 2;
         }
+
+    }
+
+    public void showSwipeScreen(View view) {
+
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.swipe_animation, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
     }
 
 }

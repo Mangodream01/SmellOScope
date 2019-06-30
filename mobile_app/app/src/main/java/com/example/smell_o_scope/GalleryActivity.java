@@ -1,125 +1,81 @@
 package com.example.smell_o_scope;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.MergeCursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
+import com.bumptech.glide.Glide;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.RecursiveAction;
 
 public class GalleryActivity extends AppCompatActivity {
-    // https://androidjson.com/retrieve-stored-images-firebase-storage/
 
-//    private RecyclerView mRecylcerView;
-//    private ImageAdapter mAdapter;
-//
-//    private DatabaseReference mDatabaseRef;
-//    private StorageReference mStorageRef;
-//    private List<Upload> mUploads;
-
-    String Uid;
-
-
-    private ImageView mImage;
-
-    Button analytics;
-
-    ArrayList<String> imageUrlList = new ArrayList<>();
-
+    static final int REQUEST_PERMISSION_KEY = 1;
+    LoadAlbum loadAlbumTask;
+    GridView galleryGridView;
+    ArrayList<HashMap<String, String>> albumList = new ArrayList<HashMap<String, String>>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
-//        mStorageRef = FirebaseStorage.getInstance().getReference();
-//        mRecylcerView = findViewById(R.id.galleryview);
-//        mRecylcerView.setHasFixedSize(true);
-//        mRecylcerView.setLayoutManager(new LinearLayoutManager(this));
-//
-//        mUploads = new ArrayList<>();
 
-        Uid = FirebaseAuth.getInstance().getUid();
+        galleryGridView = (GridView) findViewById(R.id.galleryGridView);
+
+        int iDisplayWidth = getResources().getDisplayMetrics().widthPixels ;
+        Resources resources = getApplicationContext().getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = iDisplayWidth / (metrics.densityDpi / 160f);
+
+        if(dp < 360)
+        {
+            dp = (dp - 17) / 2;
+            float px = Function.convertDpToPixel(dp, getApplicationContext());
+            galleryGridView.setColumnWidth(Math.round(px));
+        }
+
+        String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+        if(!Function.hasPermissions(this, PERMISSIONS)){
+            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION_KEY);
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarGallery);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-//        //mDatabaseRef = FirebaseDatabase.getInstance().getReference("capturedImages");
-//        mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("users").child(Uid).child("capturedImages");
-//
-//        mDatabaseRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//               public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                String imageUrl = "";
-//                for(DataSnapshot chatSnapshot : dataSnapshot.getChildren()){
-//                    if(chatSnapshot.child("imageUrl").getValue() != null){
-//                        imageUrl = chatSnapshot.child("imageUrl").getValue().toString(); }
-//                        imageUrlList.add(imageUrl);
-//                                               }
-//                                           }
-////            @Override
-////            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-////                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-////                    Upload upload = postSnapshot.getValue(Upload.class);
-////                    //upload.setmImageUrl(ShowCaptureActivity.upload.getImageUrl());
-////                    mUploads.add(upload);
-//////                    Upload upload = ShowCaptureActivity.upload;
-//////                    mUploads.add(upload);
-////                }
-////
-////                mAdapter = new ImageAdapter(GalleryActivity.this, mUploads);
-////
-////                mRecylcerView.setAdapter(mAdapter);
-////            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                Toast.makeText(GalleryActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
-
-//        ImageView imview = (ImageView) findViewById(R.id.dish1);
-////        imview.setImageResource(0);
-////        Drawable draw = getResources().getDrawable(R.mipmap.food_image);
-////        imview.setImageDrawable(draw);
-//
-//        String url="https://firebasestorage.googleapis.com/v0/b/flavourmeter.appspot.com/o/captures%2F-LfJoqmMFnSHdi45tZNv?alt=media&token=783005ce-4b3b-497e-8acf-d7d7540758b1";//Retrieved url as mentioned above
-//        Glide.with(getApplicationContext()).load(url).into(imview);
-
-
-//        analytics = findViewById(R.id.analytics1);
-//        analytics.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                showAnalytics();
-//            }
-//        });
-
-
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -127,41 +83,164 @@ public class GalleryActivity extends AppCompatActivity {
         return true;
     }
 
-    private int imageIterator = 0;
-    private void initializeDisplay() {
-        Glide.with(getApplication()).load(imageUrlList.get(imageIterator)).into(mImage);
 
-        mImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeImage();
-            }
-        });
-        final Handler handler = new Handler();
-        final int delay = 5000;
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                changeImage();
-                handler.postDelayed(this, delay);
-            }
-        }, delay);
-    }
 
-    private void changeImage() {
-        if(imageIterator == imageUrlList.size() - 1){
-            finish();
-            return;
+    class LoadAlbum extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            albumList.clear();
         }
-        imageIterator++;
-        Glide.with(getApplication()).load(imageUrlList.get(imageIterator)).into(mImage);
+
+        protected String doInBackground(String... args) {
+            String xml = "";
+
+            String path = null;
+            String album = null;
+            String timestamp = null;
+            String countPhoto = null;
+            Uri uriExternal = android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            Uri uriInternal = android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI;
+
+
+            String[] projection = { MediaStore.MediaColumns.DATA,
+                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.MediaColumns.DATE_MODIFIED };
+            Cursor cursorExternal = getContentResolver().query(uriExternal, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name",
+                    null, null);
+            Cursor cursorInternal = getContentResolver().query(uriInternal, projection, "_data IS NOT NULL) GROUP BY (bucket_display_name",
+                    null, null);
+            Cursor cursor = new MergeCursor(new Cursor[]{cursorExternal,cursorInternal});
+
+            while (cursor.moveToNext()) {
+
+                path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
+                album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+                timestamp = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_MODIFIED));
+                countPhoto = Function.getCount(getApplicationContext(), album);
+
+                albumList.add(Function.mappingInbox(album, path, timestamp, Function.converToTime(timestamp), countPhoto));
+            }
+            cursor.close();
+            Collections.sort(albumList, new MapComparator(Function.KEY_TIMESTAMP, "dsc")); // Arranging photo album by timestamp decending
+            return xml;
+        }
+
+        @Override
+        protected void onPostExecute(String xml) {
+
+            AlbumAdapter adapter = new AlbumAdapter(GalleryActivity.this, albumList);
+            galleryGridView.setAdapter(adapter);
+            galleryGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        final int position, long id) {
+                    Intent intent = new Intent(GalleryActivity.this, AlbumActivity.class);
+                    intent.putExtra("name", albumList.get(+position).get(Function.KEY_ALBUM));
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
-    private void showAnalytics() {
-        Intent intent = new Intent(this, AnalyticsActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        return;
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode)
+        {
+            case REQUEST_PERMISSION_KEY: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    loadAlbumTask = new LoadAlbum();
+                    loadAlbumTask.execute();
+                } else
+                {
+                    Toast.makeText(GalleryActivity.this, "You must accept permissions.", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+    }
+
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+        if(!Function.hasPermissions(this, PERMISSIONS)){
+            ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION_KEY);
+        }else{
+            loadAlbumTask = new LoadAlbum();
+            loadAlbumTask.execute();
+        }
+
     }
 }
+
+
+
+
+class AlbumAdapter extends BaseAdapter {
+    private Activity activity;
+    private ArrayList<HashMap< String, String >> data;
+    public AlbumAdapter(Activity a, ArrayList < HashMap < String, String >> d) {
+        activity = a;
+        data = d;
+    }
+    public int getCount() {
+        return data.size();
+    }
+    public Object getItem(int position) {
+        return position;
+    }
+    public long getItemId(int position) {
+        return position;
+    }
+
+    public View getView(int position, View convertView, ViewGroup parent) {
+        AlbumViewHolder holder = null;
+        if (convertView == null) {
+            holder = new AlbumViewHolder();
+            convertView = LayoutInflater.from(activity).inflate(
+                    R.layout.album_row, parent, false);
+
+            holder.galleryImage = (ImageView) convertView.findViewById(R.id.galleryImage);
+            holder.gallery_count = (TextView) convertView.findViewById(R.id.gallery_count);
+            holder.gallery_title = (TextView) convertView.findViewById(R.id.gallery_title);
+
+            convertView.setTag(holder);
+        } else {
+            holder = (AlbumViewHolder) convertView.getTag();
+        }
+        holder.galleryImage.setId(position);
+        holder.gallery_count.setId(position);
+        holder.gallery_title.setId(position);
+
+        HashMap < String, String > song = new HashMap < String, String > ();
+        song = data.get(position);
+        try {
+            holder.gallery_title.setText(song.get(Function.KEY_ALBUM));
+            holder.gallery_count.setText(song.get(Function.KEY_COUNT));
+
+            Glide.with(activity)
+                    .load(new File(song.get(Function.KEY_PATH))) // Uri of the picture
+                    .into(holder.galleryImage);
+
+
+        } catch (Exception e) {}
+        return convertView;
+    }
+}
+
+
+class AlbumViewHolder {
+    ImageView galleryImage;
+    TextView gallery_count, gallery_title;
+}
+
+
+
